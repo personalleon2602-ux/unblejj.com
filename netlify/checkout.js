@@ -46,7 +46,7 @@ function renderSummary() {
   const { sub, disc, ship, total } = totals(), pay = payMethod();
   const sp = $('#ship-std-p'); if (sp) sp.textContent = sub >= FREE ? 'Falas' : eur(SHIP.std);
   const action = pay === 'paypal'
-    ? `<div class="pp-how"><b>Si paguhet me PayPal</b><ol><li>Kliko butonin e verdhë. Hapet faqja jonë e pagesës te PayPal.</li><li>Shkruaj shumën <b>${eur(total)}</b>.</li><li>Te shënimi shkruaj numrin e porosisë që të shfaqet.</li></ol></div>
+    ? `<div class="pp-how"><b>Si paguhet me PayPal</b><ol><li>Kliko butonin e verdhë. Kalon te PayPal-i me shumën <b>${eur(total)}</b> të vendosur.</li><li>Paguaj me llogarinë tënde PayPal.</li><li>Kthehesh vetë këtu dhe porosia konfirmohet.</li></ol></div>
        <button class="btn btn-lg btn-block pp-go" type="submit" form="co-form">Paguaj ${eur(total)} me <span class="pp-word">Pay<b>Pal</b></span></button>`
     : '<button class="btn btn-primary btn-lg btn-block" type="submit" form="co-form">Konfirmo porosinë</button>';
   box.innerHTML = `<h2>Përmbledhja</h2>
@@ -110,38 +110,64 @@ function finishOrder(o) {
   LAST = { ...o, first: o.name.split(/\s+/)[0], count: o.items.reduce((s, l) => s + l.q, 0) };
   cart = []; coupon = null; current = 'done'; saveCart(); go('porosia');
 }
-/* ---------- PayPal: lidhja e pagesës së dyqanit (paratë shkojnë direkt në llogarinë PayPal) ---------- */
-const PAYPAL_LINK = 'https://www.paypal.com/ncp/payment/JRH4NJ9LURJPY';
+/* ---------- PayPal: klienti kalon te PayPal-i me shumën e shportës dhe kthehet te dyqani ----------
+   Përdor formularin standard të PayPal-it (pa API), prandaj nuk kërkon verifikim te developer.paypal.com. */
+const PAYPAL_EMAIL = '__PAYPAL_EMAIL__';
+function goToPaypal(o) {
+  const home = location.href.split('#')[0];
+  const fields = {
+    cmd: '_cart', upload: '1', business: PAYPAL_EMAIL, currency_code: 'EUR', charset: 'utf-8',
+    invoice: o.no, custom: o.no, no_shipping: '1', no_note: '1', rm: '1',
+    return: `${home}#paguar`, cancel_return: `${home}#anuluar`,
+    handling_cart: o.ship.toFixed(2), discount_amount_cart: o.disc ? o.disc.toFixed(2) : '0.00'
+  };
+  o.items.forEach((l, i) => {
+    fields[`item_name_${i + 1}`] = `${l.name}${l.size ? ` (masa ${l.size})` : ''}`.slice(0, 127);
+    fields[`item_number_${i + 1}`] = `${o.no}-${l.id}`;
+    fields[`amount_${i + 1}`] = l.price.toFixed(2);
+    fields[`quantity_${i + 1}`] = String(l.q);
+  });
+  const f = document.createElement('form');
+  f.method = 'post'; f.action = 'https://www.paypal.com/cgi-bin/webscr';
+  for (const [k, v] of Object.entries(fields)) { const i = document.createElement('input'); i.type = 'hidden'; i.name = k; i.value = v; f.append(i); }
+  document.body.append(f);
+  f.submit();
+}
 let ordering = false;
 async function placeOrder() {
   const o = collectOrder(); if (!o || ordering) return;
-  /* Faqja e PayPal hapet menjëherë me klikimin, që shfletuesi të mos e bllokojë */
-  const tab = o.pay === 'paypal' ? window.open(PAYPAL_LINK, '_blank') : null;
-  if (tab) try { tab.opener = null; } catch {}
   ordering = true;
   const btn = $('button[form="co-form"]'), label = btn?.innerHTML;
-  if (btn) { btn.disabled = true; btn.textContent = 'Po dërgohet porosia…'; }
-  try { await sendOrder(o); o.paypalOpened = !!tab; finishOrder(o); }
-  catch (e) { toast(`${icon('close')}<span>${esc(e.message)}</span>`); }
+  if (btn) { btn.disabled = true; btn.textContent = o.pay === 'paypal' ? 'Po kalon te PayPal…' : 'Po dërgohet porosia…'; }
+  try {
+    await sendOrder(o);
+    if (o.pay === 'paypal') {
+      /* Ruajmë porosinë dhe shportën, që t'i kemi kur klienti kthehet nga PayPal-i */
+      try { sessionStorage.setItem('ub-last', JSON.stringify(o)); sessionStorage.setItem('ub-cart-backup', JSON.stringify(cart)); } catch {}
+      goToPaypal(o);
+      return;
+    }
+    finishOrder(o);
+  } catch (e) { toast(`${icon('close')}<span>${esc(e.message)}</span>`); }
   finally { ordering = false; if (btn?.isConnected) { btn.disabled = false; btn.innerHTML = label; } }
+}
+/* Kthimi nga PayPal-i: pas pagesës (#paguar) ose kur klienti anulon (#anuluar) */
+function paypalReturn(paid) {
+  let o = null, saved = null;
+  try { o = JSON.parse(sessionStorage.getItem('ub-last') || 'null'); saved = JSON.parse(sessionStorage.getItem('ub-cart-backup') || 'null'); } catch {}
+  try { sessionStorage.removeItem('ub-last'); sessionStorage.removeItem('ub-cart-backup'); } catch {}
+  if (paid) { if (o) { o.paidReturn = true; finishOrder(o); } else go('ballina'); return; }
+  if (saved?.length) { cart = saved.filter(l => byId(l.id)); saveCart(); }
+  toast(`${icon('close')}<span>Pagesa me PayPal u anulua. Produktet janë ende në shportë.</span>`);
+  go(cart.length ? 'arka' : 'dyqani');
 }
 function doneView() {
   if (!LAST) return null;
   const pp = LAST.pay === 'paypal';
-  const amount = LAST.total.toFixed(2);
   return `<div class="wrap"><div class="ok-wrap">
     <span class="ok-ic">${icon('check')}</span>
     <h1 class="page-h">Faleminderit, ${esc(LAST.first)}!</h1>
-    ${pp ? `<p class="lead">Porosia u ruajt. Tani përfundo pagesën te PayPal.</p>
-    <div class="box pp-pay">
-      <ol>
-        <li>${LAST.paypalOpened ? 'Faqja e PayPal u hap në një skedë të re. Nëse nuk e sheh, kliko butonin më poshtë.' : 'Kliko butonin më poshtë për të hapur PayPal-in.'}</li>
-        <li>Shkruaj shumën: <b>${eur(LAST.total)}</b> <button class="copy" type="button" data-copy="${amount}">${icon('copy')} Kopjo</button></li>
-        <li>Te shënimi shkruaj numrin e porosisë: <b>${LAST.no}</b> <button class="copy" type="button" data-copy="${LAST.no}">${icon('copy')} Kopjo</button></li>
-      </ol>
-      <a class="btn btn-lg btn-block pp-go" href="${PAYPAL_LINK}" target="_blank" rel="noopener">Hap PayPal dhe paguaj ${eur(LAST.total)}</a>
-      <small>Porosinë e nisim sapo të marrim pagesën. Nëse ke pyetje, na telefono në ${CONTACT.phone}.</small>
-    </div>` : `<p class="lead">Porosia jote u pranua. Do të të telefonojmë në <b>${esc(LAST.phone)}</b> për ta konfirmuar.</p>`}
+    ${pp ? `<p class="lead">Pagesa me PayPal u krye dhe porosia u pranua. Faturën e pagesës ta dërgon PayPal-i në email. Porosinë e nisim menjëherë.</p>` : `<p class="lead">Porosia jote u pranua. Do të të telefonojmë në <b>${esc(LAST.phone)}</b> për ta konfirmuar.</p>`}
     <div class="box"><dl class="tot">
       <div><dt>Numri i porosisë</dt><dd>${LAST.no}</dd></div>
       <div><dt>Produkte</dt><dd>${LAST.count}</dd></div>

@@ -32,6 +32,15 @@ s = s.replace('Me para në dorë kur e merr pakon (pagesë në dorëzim) ose me 
 s = s.replace('Paguan me para në dorë kur e merr pakon, ose me transfer bankar para dërgesës.', 'Paguan me para në dorë kur e merr pakon, ose me PayPal kur porosit.')
 sub('<span>Transfer bankar</span>', '<span>PayPal</span>')
 sub("  if (el.name === 'ship') renderSummary();", "  if (el.name === 'ship' || el.name === 'pay') renderSummary();")
+# Kthimi nga PayPal-i
+sub("  else if (h === 'porosia') { v = 'done'; html = doneView(); }",
+    "  else if (h === 'porosia') { v = 'done'; html = doneView(); }\n"
+    "  else if (h === 'paguar' || h === 'anuluar') { setTimeout(() => paypalReturn(h === 'paguar')); html = '<div class=\"wrap page\"><p class=\"loading\">Po kthehesh nga PayPal…</p></div>'; v = 'done'; }")
+
+# Email-i i llogarisë PayPal që merr pagesat (vendoset nga PAYPAL_EMAIL ose skedari netlify/paypal-email.txt)
+pp_email = os.environ.get('PAYPAL_EMAIL') or (open(os.path.join(ROOT, 'netlify', 'paypal-email.txt'), encoding='utf-8').read().strip() if os.path.exists(os.path.join(ROOT, 'netlify', 'paypal-email.txt')) else '')
+assert re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', pp_email), 'Vendos email-in e PayPal te netlify/paypal-email.txt'
+sub("const PAYPAL_EMAIL = '__PAYPAL_EMAIL__';", f"const PAYPAL_EMAIL = '{pp_email}';")
 
 # Abonimi te ofertat shkon edhe ai te Netlify Forms
 sub("i.value = ''; toast(`${icon('check')}<span><b>Faleminderit!</b><small>Version demo: email-i ende nuk ruhet.</small></span>`);",
