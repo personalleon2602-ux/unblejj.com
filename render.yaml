@@ -15,7 +15,10 @@ services:
       - key: DATA_DIR
         value: /var/data
       - key: PAYPAL_ENV
-        value: sandbox
+        value: live
+      # Client ID e PayPal është publike (shfaqet edhe në faqe). Secret, nëse e shton, vendoset vetëm te Render.
+      - key: PAYPAL_CLIENT_ID
+        value: BAAqMo787obOl9KpEOJkM-bJ5TbfsJfzEVXWc4_5ziyeoB11tbZLRnKEImU-NhtGxzPWCSCqussvbT3AHY
       - key: SITE_URL
         sync: false
       - key: ADMIN_EMAILS
@@ -25,8 +28,6 @@ services:
       - key: RESEND_API_KEY
         sync: false
       - key: MAIL_FROM
-        sync: false
-      - key: PAYPAL_CLIENT_ID
         sync: false
       - key: PAYPAL_CLIENT_SECRET
         sync: false

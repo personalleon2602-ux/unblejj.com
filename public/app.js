@@ -758,6 +758,7 @@ function loadPaypal() {
   return paypalLoad ||= new Promise((res, rej) => {
     const s = document.createElement('script');
     s.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(CONFIG.paypalClientId)}&currency=EUR&intent=capture&components=buttons&disable-funding=card,credit,paylater,sepa,bancontact,blik,eps,giropay,ideal,mybank,p24,sofort,venmo`;
+    if (CONFIG.nonce) s.dataset.cspNonce = CONFIG.nonce;
     s.onload = res;
     s.onerror = () => { paypalLoad = null; s.remove(); rej(new Error('PayPal nuk u hap. Kontrollo internetin dhe provo përsëri, ose zgjidh pagesë në dorëzim.')); };
     document.head.append(s);
@@ -768,12 +769,36 @@ async function mountPaypal() {
   try { await loadPaypal(); } catch (e) { box.innerHTML = `<p class="acc-note">${esc(e.message)}</p>`; return; }
   if (!box.isConnected) return;
   box.innerHTML = '';
+  /* Shuma që paguhet është gjithmonë ajo që llogarit serveri nga çmimet e produkteve në shportë */
+  const m = v => ({ currency_code: 'EUR', value: Number(v).toFixed(2) });
+  let prep = null;
+  const flow = CONFIG.paypalMode === 'client' ? {
+    createOrder: async (data, actions) => {
+      prep = await api('/paypal/prepare', collectOrder());
+      return actions.order.create({
+        intent: 'CAPTURE',
+        purchase_units: [{
+          reference_id: prep.no, invoice_id: prep.no, description: `Porosia ${prep.no} në unblej`,
+          amount: { ...m(prep.total), breakdown: { item_total: m(prep.sub), shipping: m(prep.ship), discount: m(prep.disc) } },
+          items: prep.items.map(l => ({ name: `${l.name}${l.size ? ` (${l.size})` : ''}`.slice(0, 127), quantity: String(l.q), unit_amount: m(l.price), category: 'PHYSICAL_GOODS' }))
+        }],
+        application_context: { brand_name: 'unblej', shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW' }
+      });
+    },
+    onApprove: async (data, actions) => {
+      const d = await actions.order.capture();
+      const cap = d.purchase_units?.[0]?.payments?.captures?.[0];
+      finishOrder((await api('/paypal/confirm', { no: prep.no, paypalOrderId: d.id, captureId: cap?.id, amount: Number(cap?.amount?.value), currency: cap?.amount?.currency_code, status: cap?.status })).order);
+    }
+  } : {
+    createOrder: async () => (await api('/paypal/create', collectOrder())).paypalId,
+    onApprove: async data => finishOrder((await api('/paypal/capture', { paypalId: data.orderID })).order)
+  };
   window.paypal.Buttons({
     fundingSource: window.paypal.FUNDING.PAYPAL,
     style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay', height: 50 },
     onClick: (data, actions) => (collectOrder() ? actions.resolve() : actions.reject()),
-    createOrder: async () => (await api('/paypal/create', collectOrder())).paypalId,
-    onApprove: async data => finishOrder((await api('/paypal/capture', { paypalId: data.orderID })).order),
+    ...flow,
     onCancel: () => toast(`${icon('close')}<span>Pagesa me PayPal u anulua. Porosia nuk u krye.</span>`),
     onError: err => toast(`${icon('close')}<span>${esc(err?.message || 'PayPal nuk funksionoi. Provo përsëri ose zgjidh pagesë në dorëzim.')}</span>`)
   }).render(box).catch(() => {});

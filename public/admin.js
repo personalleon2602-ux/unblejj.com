@@ -84,7 +84,7 @@ function orderTable(list) {
       <td>${esc(o.name)}<small>${esc(o.phone)} · ${esc(o.city)}</small></td>
       <td class="num">${o.items.reduce((s, l) => s + l.q, 0)}</td>
       <td class="num"><b>${eur(o.total)}</b></td>
-      <td>${o.pay === 'paypal' ? '<span class="pill paid">PayPal · e paguar</span>' : esc(o.payLabel)}</td>
+      <td>${o.pay === 'paypal' ? `<span class="pill paid">PayPal · e paguar</span>${o.verify ? '<small>Kontrolloje te PayPal para dërgesës</small>' : ''}` : esc(o.payLabel)}</td>
       <td><select class="status" data-status="${o.no}" aria-label="Statusi i ${o.no}">${Object.entries(STATUSES).filter(([k]) => k !== 'pending_payment').map(([k, l]) => `<option value="${k}" ${k === o.status ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
       <td><button class="btn sm" type="button" data-open-order="${o.no}">${openOrder === o.no ? 'Mbyll' : 'Detajet'}</button></td>
     </tr>${openOrder === o.no ? `<tr><td colspan="7" style="padding:0">${orderDetail(o)}</td></tr>` : ''}`).join('')}
@@ -95,7 +95,7 @@ function orderDetail(o) {
     <div><h3>Produktet</h3><ul>${o.items.map(l => `<li><span>${l.q} × ${esc(l.name)}${l.size ? ` · Masa ${l.size}` : ''}</span><b>${eur(l.price * l.q)}</b></li>`).join('')}
       <li><span>Nëntotali</span><span>${eur(o.sub)}</span></li>${o.disc ? `<li><span>Zbritja ${esc(o.coupon)}</span><span>−${eur(o.disc)}</span></li>` : ''}<li><span>Dërgesa (${o.ship_method === 'exp' ? 'ekspres' : 'standarde'})</span><span>${o.ship ? eur(o.ship) : 'Falas'}</span></li><li><b>Totali</b><b>${eur(o.total)}</b></li></ul></div>
     <div><h3>Dërgesa</h3><p>${esc(o.name)}<br>${esc(o.street)}<br>${esc(o.city)}, ${COUNTRY[o.country] || ''}<br>Tel: ${esc(o.phone)}<br>Email: ${esc(o.email)}</p>${o.note ? `<h3>Shënimi</h3><p>${esc(o.note)}</p>` : ''}</div>
-    <div><h3>Pagesa</h3><p>${esc(o.payLabel)}${o.captureId ? `<br>ID e pagesës PayPal: ${esc(o.captureId)}` : ''}<br>Arrin rreth: ${esc(o.eta)}</p></div>
+    <div><h3>Pagesa</h3><p>${esc(o.payLabel)}${o.captureId ? `<br>ID e pagesës PayPal: <b>${esc(o.captureId)}</b>` : ''}${o.verify ? '<br>Gjeje këtë ID te paypal.com → Aktiviteti dhe sigurohu që pagesa ka ardhur para se ta nisësh porosinë.' : ''}<br>Arrin rreth: ${esc(o.eta)}</p></div>
   </div>`;
 }
 

@@ -52,13 +52,15 @@ const needAdmin = (req, res) => { const u = currentUser(req); if (!u || !isAdmin
 const ip = req => req.ip || 'x';
 const emailOk = e => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e) && e.length <= 160;
 const phoneOk = p => String(p || '').replace(/\D/g, '').length >= 8;
-const config = () => ({ paypalClientId: paypalEnabled() ? process.env.PAYPAL_CLIENT_ID : null, currency: 'EUR' });
+/* PayPal: "server" kur ka Client ID + Secret (verifikim te PayPal); "client" kur ka vetëm Client ID */
+const paypalMode = () => (process.env.PAYPAL_CLIENT_ID ? (paypalEnabled() ? 'server' : 'client') : null);
+const config = () => ({ paypalClientId: process.env.PAYPAL_CLIENT_ID || null, paypalMode: paypalMode(), currency: 'EUR' });
 
 /* ---------- Faqja ---------- */
 const indexHtml = fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8');
 const json = v => JSON.stringify(v).replace(/</g, '\\u003c');
 function sendIndex(req, res) {
-  const boot = `<script nonce="${res.locals.nonce}">window.__CATALOG__=${json(allProducts())};window.__ME__=${json(publicUser(currentUser(req)))};window.__CONFIG__=${json(config())};</script>`;
+  const boot = `<script nonce="${res.locals.nonce}">window.__CATALOG__=${json(allProducts())};window.__ME__=${json(publicUser(currentUser(req)))};window.__CONFIG__=${json({ ...config(), nonce: res.locals.nonce })};</script>`;
   res.setHeader('Cache-Control', 'no-store');
   res.type('html').send(indexHtml.replace('<!--BOOT-->', boot));
 }
@@ -67,7 +69,11 @@ app.get('/index.html', sendIndex);
 app.get('/admin', (req, res) => res.sendFile(path.join(PUBLIC, 'admin.html')));
 app.get('/healthz', (req, res) => res.json({ ok: true }));
 app.use('/uploads', express.static(UPLOADS, { maxAge: '30d', immutable: true }));
-app.use(express.static(PUBLIC, { maxAge: '1h', index: false }));
+/* Kodi i faqes rikontrollohet çdo herë (që përditësimet të dalin menjëherë); fotot ruhen një ditë */
+app.use(express.static(PUBLIC, {
+  index: false,
+  setHeaders: (res, file) => res.setHeader('Cache-Control', /\.(js|css|html)$/.test(file) ? 'no-cache' : 'public, max-age=86400')
+}));
 
 /* ---------- Llogaritë ---------- */
 app.get('/api/config', (req, res) => res.json(config()));
@@ -234,6 +240,43 @@ app.post('/api/paypal/capture', wrap(async (req, res) => {
   res.json({ order: orderOut(db.prepare('SELECT * FROM orders WHERE id = ?').get(row.id)) });
 }));
 
+/* PayPal vetëm me Client ID: serveri llogarit shumën nga çmimet e produkteve dhe e ruan porosinë "në pritje të pagesës";
+   shfletuesi e kalon atë shumë te PayPal; pas pagesës serveri pranon vetëm shumën e saktë në EUR. */
+app.post('/api/paypal/prepare', (req, res) => {
+  const u = need(req, res); if (!u) return;
+  if (paypalMode() !== 'client') return res.status(503).json({ error: 'Pagesa me PayPal nuk është aktive tani.' });
+  let o;
+  try { o = buildOrder({ ...req.body, pay: 'paypal' }, u); } catch (e) { return res.status(e.status || 400).json({ error: e.message }); }
+  o.no = newOrderNo();
+  o.saveAddress = !!req.body.saveAddress;
+  db.prepare('INSERT INTO orders (no, user_id, status, pay, data, total, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+    .run(o.no, u.id, 'pending_payment', 'paypal', JSON.stringify(o), o.total, Date.now(), Date.now());
+  res.json({ no: o.no, total: o.total, sub: o.sub, ship: o.ship, disc: o.disc, items: o.items.map(l => ({ name: l.name, q: l.q, price: l.price, size: l.size })) });
+});
+
+app.post('/api/paypal/confirm', (req, res) => {
+  const u = need(req, res); if (!u) return;
+  const row = db.prepare('SELECT * FROM orders WHERE no = ? AND user_id = ?').get(String(req.body.no || ''), u.id);
+  if (!row) return res.status(404).json({ error: 'Porosia nuk u gjet.' });
+  if (row.status !== 'pending_payment') return res.json({ order: orderOut(row) });
+  const amount = Number(req.body.amount);
+  if (req.body.status !== 'COMPLETED' || req.body.currency !== 'EUR' || !(Math.abs(amount - row.total) < 0.01)) {
+    console.error('[paypal] Pagesa nuk përputhet', row.no, req.body);
+    return res.status(400).json({ error: 'Shuma e paguar nuk përputhet me porosinë. Na kontakto me numrin e porosisë ' + row.no + '.' });
+  }
+  const o = JSON.parse(row.data);
+  o.captureId = String(req.body.captureId || '').slice(0, 64);
+  o.paypalOrderId = String(req.body.paypalOrderId || '').slice(0, 64);
+  o.verify = true;
+  tx(() => {
+    db.prepare("UPDATE orders SET status = 'new', paypal_id = ?, data = ?, updated = ? WHERE id = ?").run(o.paypalOrderId || null, JSON.stringify(o), Date.now(), row.id);
+    takeStock(o.items);
+    if (o.saveAddress) saveAddress(u, o, { saveAddress: true });
+  })();
+  notify({ ...o, no: row.no }, u);
+  res.json({ order: orderOut(db.prepare('SELECT * FROM orders WHERE id = ?').get(row.id)) });
+});
+
 /* ---------- Paneli i administrimit ---------- */
 app.get('/api/admin/stats', (req, res) => {
   if (!needAdmin(req, res)) return;
@@ -336,4 +379,4 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: err.paypal ? 'PayPal nuk u përgjigj si duhet. Provo përsëri.' : 'Ndodhi një gabim në server. Provo përsëri.' });
 });
 
-app.listen(PORT, () => console.log(`unblej po punon në http://localhost:${PORT}  (PayPal: ${paypalEnabled() ? process.env.PAYPAL_ENV || 'sandbox' : 'jo aktiv'}, email: ${process.env.RESEND_API_KEY ? 'Resend' : 'data/outbox'})`));
+app.listen(PORT, () => console.log(`unblej po punon në http://localhost:${PORT}  (PayPal: ${paypalMode() ? `${paypalMode()}, ${process.env.PAYPAL_ENV || 'sandbox'}` : 'jo aktiv'}, email: ${process.env.RESEND_API_KEY ? 'Resend' : 'data/outbox'})`));

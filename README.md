@@ -67,6 +67,13 @@ Email-et që dërgon dyqani:
 
 ## 4. Pagesa me PayPal
 
+**Client ID e dyqanit është vendosur tashmë** te `render.yaml` (`PAYPAL_ENV=live`). Te arka del vetëm butoni PayPal, pa opsionin e kartës.
+
+- **Shuma që paguan klienti** = çmimi i çdo produkti × sasia, plus dërgesa, minus kuponi. E llogarit serveri nga çmimet te paneli, jo shfletuesi.
+- **Vetëm me Client ID:** serveri e pranon porosinë vetëm nëse PayPal raporton pagesë të plotë në EUR me shumën e saktë. Te paneli porosia shënohet "Kontrolloje te PayPal para dërgesës", bashkë me ID-në e pagesës. Para se ta nisësh pakon, gjeje atë ID te paypal.com → Aktiviteti.
+- **Për verifikim automatik (rekomandohet):** shto edhe `PAYPAL_CLIENT_SECRET` te Render, nga i njëjti aplikacion. Atëherë serveri e merr dhe e kontrollon pagesën direkt te PayPal, dhe shënimi "Kontrolloje" nuk del më. Secret vendoset vetëm te Render, kurrë në GitHub.
+
+Për prova me para të rreme, me aplikacion Sandbox:
 1. Hyr në [developer.paypal.com](https://developer.paypal.com) me llogarinë tënde PayPal **Business**.
 2. Te **Apps & Credentials**, në skedën **Sandbox**, krijo një aplikacion. Kopjo **Client ID** dhe **Secret** te Render dhe lëre `PAYPAL_ENV=sandbox`.
 3. Provo një blerje me një llogari prove nga **Sandbox → Accounts**.
