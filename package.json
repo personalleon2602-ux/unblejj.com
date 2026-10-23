@@ -1,0 +1,19 @@
+{
+  "name": "unblej",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Dyqani online unblej: faqja, serveri, llogaritë, porositë, PayPal dhe paneli i administrimit.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --env-file-if-exists=.env --watch server.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "multer": "^2.0.1"
+  }
+}

@@ -1,0 +1,553 @@
+[
+ {
+  "id": 1,
+  "cat": "audio",
+  "brand": "Nexa",
+  "name": "Kufje Wireless Bluetooth 5.3, ANC, 40h bateri",
+  "price": 24.9,
+  "old": 38.3,
+  "rating": 4.6,
+  "reviews": 1240,
+  "sold": 540,
+  "stock": 9,
+  "img": "p-earbuds-black.webp",
+  "tags": [
+   "best"
+  ],
+  "desc": "Kufje të lehta me anulim aktiv të zhurmës dhe deri në 40 orë muzikë me kutinë e karikimit. Lidhen vetë me telefonin sapo hap kutinë.",
+  "feat": [
+   "Anulim aktiv i zhurmës dhe modalitet transparence",
+   "Kontroll me prekje për muzikë dhe thirrje",
+   "Rezistente ndaj djersës dhe spërkatjeve (IPX4)"
+  ],
+  "specs": {
+   "Lidhja": "Bluetooth 5.3",
+   "Bateria": "8 orë + 32 orë me kutinë",
+   "Karikimi": "USB-C",
+   "Mikrofonat": "4, me reduktim të zhurmës",
+   "Rezistenca": "IPX4",
+   "Garancia": "12 muaj"
+  }
+ },
+ {
+  "id": 2,
+  "cat": "audio",
+  "brand": "Volta",
+  "name": "Kufje Wireless Pro, Noise Cancelling",
+  "price": 199,
+  "old": 249,
+  "rating": 4.8,
+  "reviews": 412,
+  "sold": 150,
+  "img": "d-headphones.webp",
+  "tags": [
+   "new",
+   "best"
+  ],
+  "desc": "Kufje mbi vesh me tingull të pasur, bas të thellë dhe anulim hibrid të zhurmës. Jastëkët memory-foam i bëjnë të rehatshme gjatë gjithë ditës.",
+  "feat": [
+   "Anulim hibrid i zhurmës me 3 nivele",
+   "10 minuta karikim japin 5 orë muzikë",
+   "Lidhje me dy pajisje njëkohësisht"
+  ],
+  "specs": {
+   "Lloji": "Mbi vesh, të palosshme",
+   "Lidhja": "Bluetooth 5.3 dhe kabllo 3,5 mm",
+   "Bateria": "Deri në 60 orë",
+   "Pesha": "250 g",
+   "Garancia": "24 muaj"
+  }
+ },
+ {
+  "id": 3,
+  "cat": "audio",
+  "brand": "Nexa",
+  "name": "Kufje Earbuds 5.3 Pro me kuti karikimi",
+  "price": 79.9,
+  "old": 99.9,
+  "rating": 4.5,
+  "reviews": 640,
+  "sold": 260,
+  "stock": 12,
+  "img": "d-earbuds.webp",
+  "tags": [],
+  "desc": "Kufje in-ear me bas të fuqishëm, anulim të zhurmës dhe kuti kompakte me karikim të shpejtë. Të përshtatshme për stërvitje dhe udhëtime.",
+  "feat": [
+   "Anulim i zhurmës deri në 42 dB",
+   "10 minuta karikim japin 2 orë muzikë",
+   "Majëza silikoni në 3 madhësi"
+  ],
+  "specs": {
+   "Lidhja": "Bluetooth 5.3",
+   "Bateria": "7 orë + 28 orë me kutinë",
+   "Rezistenca": "IPX5",
+   "Karikimi": "USB-C",
+   "Garancia": "12 muaj"
+  }
+ },
+ {
+  "id": 4,
+  "cat": "audio",
+  "brand": "Aurel",
+  "name": "Kufje AirSound të bardha, karikim wireless",
+  "price": 59.9,
+  "old": 89.9,
+  "rating": 4.4,
+  "reviews": 318,
+  "sold": 120,
+  "img": "b-earbuds-white.webp",
+  "tags": [
+   "new"
+  ],
+  "desc": "Dizajn i pastër në të bardhë, tingull hapësinor dhe kuti me karikim wireless. Lidhen shpejt me çdo telefon iOS dhe Android.",
+  "feat": [
+   "Tingull hapësinor me ekualizues adaptiv",
+   "Kuti me karikim wireless (Qi) dhe USB-C",
+   "Muzika ndalon kur e heq kufjen nga veshi"
+  ],
+  "specs": {
+   "Lidhja": "Bluetooth 5.3",
+   "Bateria": "6 orë + 24 orë me kutinë",
+   "Karikimi": "Wireless Qi, USB-C",
+   "Ngjyra": "E bardhë",
+   "Garancia": "12 muaj"
+  }
+ },
+ {
+  "id": 5,
+  "cat": "telefon",
+  "brand": "Kronos",
+  "name": "Smartphone Ultra X, 128GB, 5G",
+  "price": 749.5,
+  "old": 829,
+  "rating": 4.7,
+  "reviews": 286,
+  "sold": 90,
+  "img": "d-phone.webp",
+  "tags": [
+   "new"
+  ],
+  "desc": "Ekran AMOLED 6,7\" me 120 Hz, kamerë kryesore 50 MP dhe bateri 5000 mAh që të mban gjithë ditën. Me 5G për internet të shpejtë kudo.",
+  "feat": [
+   "Ekran AMOLED 6,7\" me 120 Hz",
+   "Kamerë 50 MP me stabilizim optik",
+   "Karikim i shpejtë 45 W"
+  ],
+  "specs": {
+   "Ekrani": "6,7\" AMOLED, 120 Hz",
+   "Memoria": "128 GB, 8 GB RAM",
+   "Kamera": "50 + 12 + 10 MP",
+   "Bateria": "5000 mAh",
+   "Rrjeti": "5G, Dual SIM",
+   "Garancia": "24 muaj"
+  }
+ },
+ {
+  "id": 6,
+  "cat": "telefon",
+  "brand": "Kronos",
+  "name": "Smartphone Ultra X Pro, 256GB, 5G",
+  "price": 899,
+  "old": null,
+  "rating": 4.8,
+  "reviews": 154,
+  "sold": 45,
+  "img": "b-phone.webp",
+  "tags": [
+   "new"
+  ],
+  "desc": "Versioni Pro me 256 GB memorie, kornizë titani dhe kamerë telefoto 5x për foto të qarta edhe nga larg.",
+  "feat": [
+   "Kamerë telefoto me zmadhim optik 5x",
+   "Kornizë titani, e lehtë dhe e fortë",
+   "Ekran LTPO që kursen baterinë"
+  ],
+  "specs": {
+   "Ekrani": "6,8\" LTPO AMOLED, 120 Hz",
+   "Memoria": "256 GB, 12 GB RAM",
+   "Kamera": "200 + 50 (5x) + 12 MP",
+   "Bateria": "5000 mAh",
+   "Korniza": "Titan",
+   "Garancia": "24 muaj"
+  }
+ },
+ {
+  "id": 7,
+  "cat": "telefon",
+  "brand": "Volta",
+  "name": "Smartwatch Fitness, monitor i rrahjeve të zemrës",
+  "price": 45,
+  "old": 64.29,
+  "rating": 4.7,
+  "reviews": 876,
+  "sold": 430,
+  "stock": 7,
+  "img": "p-smartwatch-black.webp",
+  "tags": [
+   "best"
+  ],
+  "desc": "Ndjek rrahjet e zemrës, gjumin, hapat dhe mbi 100 sporte. Bateria zgjat deri në 10 ditë me një karikim.",
+  "feat": [
+   "Monitorim 24/7 i zemrës dhe i oksigjenit (SpO2)",
+   "Njoftime për thirrje dhe mesazhe",
+   "Rezistente ndaj ujit deri në 5 ATM"
+  ],
+  "specs": {
+   "Ekrani": "1,43\" AMOLED",
+   "Bateria": "Deri në 10 ditë",
+   "Rezistenca": "5 ATM",
+   "Përputhshmëria": "Android dhe iOS",
+   "Garancia": "12 muaj"
+  }
+ },
+ {
+  "id": 8,
+  "cat": "telefon",
+  "brand": "Aurel",
+  "name": "Smartwatch Series 8, ekran AMOLED 1,9\"",
+  "price": 129,
+  "old": 159,
+  "rating": 4.6,
+  "reviews": 203,
+  "sold": 110,
+  "img": "b-watch.webp",
+  "tags": [
+   "new"
+  ],
+  "desc": "Ekran i madh dhe i ndritshëm, thirrje direkt nga ora dhe GPS i integruar për vrapim pa telefon.",
+  "feat": [
+   "GPS i integruar për vrapim dhe çiklizëm",
+   "Thirrje me mikrofon dhe altoparlant",
+   "Mbi 200 fytyra ore për ta personalizuar"
+  ],
+  "specs": {
+   "Ekrani": "1,9\" AMOLED",
+   "GPS": "I integruar",
+   "Thirrjet": "Bluetooth, mikrofon dhe altoparlant",
+   "Bateria": "Deri në 7 ditë",
+   "Garancia": "12 muaj"
+  }
+ },
+ {
+  "id": 9,
+  "cat": "telefon",
+  "brand": "Volta",
+  "name": "Set Smartwatch Sport + Kufje Mini",
+  "price": 59.9,
+  "old": 89.9,
+  "rating": 4.5,
+  "reviews": 167,
+  "sold": 75,
+  "img": "d-watch.webp",
+  "tags": [
+   "set"
+  ],
+  "desc": "Paketë për stërvitje: smartwatch me mbi 100 modalitete sporti dhe kufje mini që nuk bien gjatë vrapimit.",
+  "feat": [
+   "Ora dhe kufjet lidhen me të njëjtin aplikacion",
+   "Kufje mini me mbajtëse për vesh",
+   "Vjen në kuti dhuratë"
+  ],
+  "specs": {
+   "Përmban": "Smartwatch Sport, kufje mini Bluetooth",
+   "Bateria e orës": "Deri në 7 ditë",
+   "Bateria e kufjeve": "6 orë + 18 orë me kutinë",
+   "Garancia": "12 muaj"
+  }
+ },
+ {
+  "id": 10,
+  "cat": "it",
+  "brand": "Kronos",
+  "name": "Laptop Pro 15\", Intel i7, 16GB RAM, 512GB SSD",
+  "price": 899.99,
+  "old": 1049,
+  "rating": 4.7,
+  "reviews": 198,
+  "sold": 210,
+  "img": "d-laptop.webp",
+  "tags": [
+   "best"
+  ],
+  "desc": "Laptop i hollë me procesor Intel Core i7, 16 GB RAM dhe SSD 512 GB. I shpejtë për punë, studime dhe projekte kreative.",
+  "feat": [
+   "Ekran 15,6\" Full HD IPS",
+   "Trup alumini, vetëm 1,7 kg",
+   "Tastierë me ndriçim dhe lexues gishti"
+  ],
+  "specs": {
+   "Procesori": "Intel Core i7, gjenerata e 13-të",
+   "RAM": "16 GB DDR5",
+   "Memoria": "512 GB SSD NVMe",
+   "Ekrani": "15,6\" Full HD IPS",
+   "Sistemi": "Windows 11 Home",
+   "Garancia": "24 muaj"
+  }
+ },
+ {
+  "id": 11,
+  "cat": "it",
+  "brand": "Strada",
+  "name": "Çantë shpine për laptop 15,6\", rezistente ndaj ujit",
+  "price": 28,
+  "old": 35,
+  "rating": 4.7,
+  "reviews": 1520,
+  "sold": 820,
+  "img": "p-backpack.webp",
+  "tags": [
+   "best"
+  ],
+  "desc": "Çantë e lehtë me ndarje të mbushur për laptop deri në 15,6\", shumë xhepa dhe pëlhurë që nuk lëshon ujë.",
+  "feat": [
+   "Ndarje e mbushur për laptop deri në 15,6\"",
+   "Xhep i fshehur në shpinë për dokumente",
+   "Rripa të butë që nuk lodhin shpatullat"
+  ],
+  "specs": {
+   "Madhësia": "45 × 30 × 15 cm",
+   "Ndarja e laptopit": "Deri në 15,6\"",
+   "Materiali": "Poliestër rezistent ndaj ujit",
+   "Pesha": "0,8 kg",
+   "Garancia": "6 muaj"
+  }
+ },
+ {
+  "id": 12,
+  "cat": "elektro",
+  "brand": "Brio",
+  "name": "Çajnik elektrik 1,7L inox, 2200W",
+  "price": 18.9,
+  "old": 25.2,
+  "rating": 4.6,
+  "reviews": 980,
+  "sold": 330,
+  "stock": 15,
+  "img": "p-kettle-steel.webp",
+  "tags": [
+   "best"
+  ],
+  "desc": "Vlon 1,7 litra ujë në pak minuta. Trup inox, fikje automatike dhe mbrojtje kur ndizet pa ujë.",
+  "feat": [
+   "Fikje automatike kur uji vlon",
+   "Mbrojtje nëse ndizet pa ujë",
+   "Bazë 360° me vend për kabllon"
+  ],
+  "specs": {
+   "Kapaciteti": "1,7 L",
+   "Fuqia": "2200 W",
+   "Materiali": "Çelik inox",
+   "Siguria": "Fikje automatike, mbrojtje pa ujë",
+   "Garancia": "24 muaj"
+  }
+ },
+ {
+  "id": 13,
+  "cat": "elektro",
+  "brand": "Brio",
+  "name": "Çajnik elektrik Premium 1,7L, fikje automatike",
+  "price": 44.9,
+  "old": 54.9,
+  "rating": 4.8,
+  "reviews": 142,
+  "sold": 60,
+  "img": "d-kettle.webp",
+  "tags": [
+   "new"
+  ],
+  "desc": "Dizajn premium me dorezë ergonomike, filtër kundër gëlqeres dhe bazë që rrotullohet 360°.",
+  "feat": [
+   "Filtër i lëvizshëm kundër gëlqeres",
+   "Dorezë ergonomike që nuk nxehet",
+   "Tregues i nivelit të ujit në të dyja anët"
+  ],
+  "specs": {
+   "Kapaciteti": "1,7 L",
+   "Fuqia": "2400 W",
+   "Baza": "360°",
+   "Filtri": "Kundër gëlqeres, i lëvizshëm",
+   "Garancia": "24 muaj"
+  }
+ },
+ {
+  "id": 14,
+  "cat": "elektro",
+  "brand": "Brio",
+  "name": "Blender portativ USB 500ml, 6 teh",
+  "price": 12.5,
+  "old": 17.36,
+  "rating": 4.5,
+  "reviews": 640,
+  "sold": 270,
+  "stock": 4,
+  "img": "p-blender.webp",
+  "tags": [],
+  "desc": "Bën smoothie dhe shejk kudo: 6 teh inox, bateri me karikim USB-C dhe gotë 500 ml që lahet lehtë.",
+  "feat": [
+   "6 teh inox për fruta dhe akull",
+   "Një karikim mjafton për 15 përdorime",
+   "Kapak me lak për ta marrë me vete"
+  ],
+  "specs": {
+   "Kapaciteti": "500 ml",
+   "Tehet": "6, çelik inox",
+   "Bateria": "4000 mAh, USB-C",
+   "Pesha": "0,6 kg",
+   "Garancia": "12 muaj"
+  }
+ },
+ {
+  "id": 15,
+  "cat": "kepuce",
+  "brand": "Strada",
+  "name": "Atlete sportive Mesh, unisex",
+  "price": 32,
+  "old": 53.33,
+  "rating": 4.7,
+  "reviews": 2100,
+  "sold": 1050,
+  "stock": 11,
+  "img": "p-sneakers.webp",
+  "tags": [
+   "best"
+  ],
+  "sizes": [
+   36,
+   37,
+   38,
+   39,
+   40,
+   41,
+   42,
+   43,
+   44,
+   45,
+   46
+  ],
+  "desc": "Atlete të lehta me rrjetë që e lë këmbën të marrë frymë dhe shollë që zbut çdo hap. Për vrapim, palestër dhe përdorim të përditshëm.",
+  "feat": [
+   "Rrjetë e frymëmarrshme, e lehtë",
+   "Shollë EVA që zbut goditjet",
+   "Gomë kundër rrëshqitjes"
+  ],
+  "specs": {
+   "Materiali": "Mesh i frymëmarrshëm",
+   "Sholla": "EVA dhe gomë kundër rrëshqitjes",
+   "Masat": "36–46",
+   "Ngjyra": "E zezë",
+   "Garancia": "6 muaj"
+  }
+ },
+ {
+  "id": 16,
+  "cat": "it",
+  "brand": "unblej",
+  "name": "Set Pune: Laptop Pro 15\" + Çantë shpine + Kufje Wireless",
+  "price": 909,
+  "rating": 4.8,
+  "reviews": 64,
+  "sold": 35,
+  "imgs": [
+   "d-laptop.webp",
+   "p-backpack.webp",
+   "p-earbuds-black.webp"
+  ],
+  "includes": [
+   10,
+   11,
+   1
+  ],
+  "tags": [
+   "set"
+  ],
+  "desc": "Gjithçka për punë dhe studime në një paketë: laptop i shpejtë, çantë që e mbron dhe kufje me anulim të zhurmës.",
+  "feat": [
+   "Më lirë se blerja e produkteve veç e veç",
+   "Çdo produkt me garancinë e vet të plotë",
+   "Dërgesë falas"
+  ],
+  "specs": {
+   "Përmban": "Laptop Pro 15\", çantë shpine 15,6\", kufje wireless ANC",
+   "Garancia": "24 muaj laptopi, 12 muaj kufjet"
+  },
+  "old": 952.89
+ },
+ {
+  "id": 17,
+  "cat": "elektro",
+  "brand": "unblej",
+  "name": "Set Kuzhine: Çajnik inox + Blender portativ",
+  "price": 26.9,
+  "rating": 4.6,
+  "reviews": 121,
+  "sold": 140,
+  "imgs": [
+   "p-kettle-steel.webp",
+   "p-blender.webp"
+  ],
+  "includes": [
+   12,
+   14
+  ],
+  "tags": [
+   "set"
+  ],
+  "desc": "Dy pajisje që përdoren çdo mëngjes, me një çmim më të mirë se veç e veç. Dhuratë e përshtatshme për një shtëpi të re.",
+  "feat": [
+   "Më lirë se blerja e produkteve veç e veç",
+   "Çajnik inox 2200 W dhe blender me bateri",
+   "Garanci për secilin produkt"
+  ],
+  "specs": {
+   "Përmban": "Çajnik elektrik 1,7 L inox, blender portativ 500 ml",
+   "Garancia": "24 muaj çajniku, 12 muaj blenderi"
+  },
+  "old": 31.4
+ },
+ {
+  "id": 18,
+  "cat": "sport",
+  "brand": "unblej",
+  "name": "Set Aktiv: Smartwatch Fitness + Atlete Mesh",
+  "price": 64.9,
+  "rating": 4.7,
+  "reviews": 88,
+  "sold": 65,
+  "imgs": [
+   "p-smartwatch-black.webp",
+   "p-sneakers.webp"
+  ],
+  "includes": [
+   7,
+   15
+  ],
+  "tags": [
+   "set"
+  ],
+  "sizes": [
+   36,
+   37,
+   38,
+   39,
+   40,
+   41,
+   42,
+   43,
+   44,
+   45,
+   46
+  ],
+  "desc": "Për të filluar vrapimin si duhet: orë që mat zemrën dhe hapat, plus atlete të lehta që zbusin çdo hap.",
+  "feat": [
+   "Më lirë se blerja e produkteve veç e veç",
+   "Zgjidh masën e atleteve nga 36 në 46",
+   "Dërgesë falas"
+  ],
+  "specs": {
+   "Përmban": "Smartwatch Fitness, atlete sportive Mesh",
+   "Masat e atleteve": "36–46",
+   "Garancia": "12 muaj ora, 6 muaj atletet"
+  },
+  "old": 77
+ }
+]

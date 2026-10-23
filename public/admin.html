@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>unblej · Paneli</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/icon-orange.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Outfit:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<header class="top">
+  <a class="logo" href="/" title="Hap dyqanin"><img src="/assets/logo-dark.png" alt="unblej" height="36"></a>
+  <span class="tag">Paneli</span>
+  <nav class="tabs" id="tabs" hidden>
+    <button type="button" data-tab="home" aria-current="page">Përmbledhja</button>
+    <button type="button" data-tab="orders">Porositë <span class="badge" id="badge-new" hidden></span></button>
+    <button type="button" data-tab="products">Produktet</button>
+    <button type="button" data-tab="customers">Klientët</button>
+  </nav>
+  <span class="who" id="who"></span>
+</header>
+
+<main id="main">
+  <section class="login" id="login" hidden>
+    <img src="/assets/icon-orange.png" alt="" width="56" height="56">
+    <h1>Hyr në panel</h1>
+    <p>Hyr me llogarinë e administratorit. Email-i yt duhet të jetë te ADMIN_EMAILS në server.</p>
+    <form id="login-form" novalidate>
+      <label for="l-email">Email</label><input id="l-email" type="email" autocomplete="email" required>
+      <label for="l-pass">Fjalëkalimi</label><input id="l-pass" type="password" autocomplete="current-password" required>
+      <p class="err" id="l-err" hidden></p>
+      <button class="btn primary" type="submit">Hyr</button>
+    </form>
+  </section>
+  <div id="view"></div>
+</main>
+
+<dialog id="pdlg" aria-labelledby="pdlg-t">
+  <form id="pform" novalidate>
+    <div class="dlg-h"><h2 id="pdlg-t">Produkt i ri</h2><button class="x" type="button" data-close aria-label="Mbyll">✕</button></div>
+    <div class="pgrid">
+      <div class="pimg">
+        <div class="preview" id="p-preview"><span>Pa foto</span></div>
+        <label class="btn" for="p-file">Ngarko foto</label>
+        <input id="p-file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+        <small>JPG, PNG ose WEBP deri në 5 MB. Më mirë katrore, me sfond të bardhë.</small>
+      </div>
+      <div class="pfields">
+        <label class="full">Emri<input id="p-name" required></label>
+        <label>Kategoria<select id="p-cat"></select></label>
+        <label>Marka<input id="p-brand"></label>
+        <label>Çmimi (€)<input id="p-price" type="number" step="0.01" min="0" required></label>
+        <label>Çmimi i vjetër (€) <i>për zbritje</i><input id="p-old" type="number" step="0.01" min="0"></label>
+        <label>Stoku <i>bosh = pa kufi</i><input id="p-stock" type="number" min="0" step="1"></label>
+        <label>Masat <i>p.sh. 38,39,40</i><input id="p-sizes"></label>
+        <fieldset class="full"><legend>Etiketat</legend>
+          <label class="chk"><input type="checkbox" value="new"> E re</label>
+          <label class="chk"><input type="checkbox" value="best"> Më e shitur</label>
+          <label class="chk"><input type="checkbox" value="set"> Set</label>
+          <label class="chk"><input type="checkbox" id="p-active" checked> Në shitje</label>
+        </fieldset>
+        <label class="full">Përshkrimi<textarea id="p-desc" rows="3"></textarea></label>
+        <label class="full">Pse ta zgjedhësh <i>një për rresht</i><textarea id="p-feat" rows="3"></textarea></label>
+        <label class="full">Specifikimet <i>“Emri: vlera”, një për rresht</i><textarea id="p-specs" rows="4"></textarea></label>
+      </div>
+    </div>
+    <p class="err" id="p-err" hidden></p>
+    <div class="dlg-f"><button class="btn" type="button" data-close>Anulo</button><button class="btn primary" type="submit">Ruaj produktin</button></div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="/admin.js"></script>
+</body>
+</html>
