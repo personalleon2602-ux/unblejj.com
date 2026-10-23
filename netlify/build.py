@@ -51,8 +51,17 @@ sub('<div class="toasts"', FORMS)
 
 CSS = '''.pp-mark{font:800 italic 17px/1 var(--f-body);color:#003087;background:#fff;padding:6px 9px;border-radius:7px;border:1px solid var(--line);white-space:nowrap}
 .pp-mark b{color:#009cde}
-.pp-btns{min-height:54px;position:relative;z-index:0}
-.pp-wait{display:grid;place-items:center;height:50px;border-radius:12px;background:#ffc439;color:#111;font-weight:700;font-size:14px}
+.pp-go{background:#ffc439;color:#111;border:0}
+.pp-go:hover{background:#f2b51d}
+.pp-word{font-style:italic;font-weight:800;color:#003087}
+.pp-word b{color:#009cde}
+.pp-how{font-size:13.5px;background:var(--surface-2);border-radius:12px;padding:12px 14px;margin:4px 0 10px}
+.pp-how ol,.pp-pay ol{margin:6px 0 0;padding-left:20px;display:grid;gap:4px;color:var(--muted)}
+.pp-how b,.pp-pay b{color:var(--fg)}
+.pp-pay{text-align:left;display:grid;gap:14px}
+.pp-pay ol{gap:10px;font-size:15px}
+.pp-pay .copy{display:inline-flex;margin-left:8px;vertical-align:middle}
+.pp-pay small{color:var(--muted);font-size:13px}
 '''
 title = re.search(r'<title>.*?</title>', s).group(0)
 body = s.replace(title, '', 1)

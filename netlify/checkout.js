@@ -27,7 +27,7 @@ function checkoutView() {
         <section class="box"><h2><span class="n">3</span>Pagesa</h2>
           <div class="opts">
             <label class="opt"><input type="radio" name="pay" value="cod" checked><span><b>Pagesë në dorëzim</b><small>Paguan me para në dorë kur e merr pakon</small></span>${icon('cash')}</label>
-            <label class="opt"><input type="radio" name="pay" value="paypal"><span><b>PayPal</b><small>Paguaj tani, në mënyrë të sigurt, me llogarinë tënde PayPal</small></span><span class="pp-mark" aria-hidden="true">Pay<b>Pal</b></span></label>
+            <label class="opt"><input type="radio" name="pay" value="paypal"><span><b>PayPal</b><small>Paguaj tani me llogarinë tënde PayPal, në faqen e sigurt të PayPal</small></span><span class="pp-mark" aria-hidden="true">Pay<b>Pal</b></span></label>
           </div>
         </section>
       </form>
@@ -46,7 +46,8 @@ function renderSummary() {
   const { sub, disc, ship, total } = totals(), pay = payMethod();
   const sp = $('#ship-std-p'); if (sp) sp.textContent = sub >= FREE ? 'Falas' : eur(SHIP.std);
   const action = pay === 'paypal'
-    ? '<div id="pp-btns" class="pp-btns"><p class="pp-wait">Po hapet PayPal…</p></div>'
+    ? `<div class="pp-how"><b>Si paguhet me PayPal</b><ol><li>Kliko butonin e verdhë. Hapet faqja jonë e pagesës te PayPal.</li><li>Shkruaj shumën <b>${eur(total)}</b>.</li><li>Te shënimi shkruaj numrin e porosisë që të shfaqet.</li></ol></div>
+       <button class="btn btn-lg btn-block pp-go" type="submit" form="co-form">Paguaj ${eur(total)} me <span class="pp-word">Pay<b>Pal</b></span></button>`
     : '<button class="btn btn-primary btn-lg btn-block" type="submit" form="co-form">Konfirmo porosinë</button>';
   box.innerHTML = `<h2>Përmbledhja</h2>
     <ul class="sum-items">${cart.map(l => { const p = byId(l.id); return `<li>${tile(p, 'span')}<span class="si-t">${esc(p.name)}<small>${l.q} × ${eur(p.price)}${l.size ? ` · Masa ${l.size}` : ''}</small></span><b>${eur(p.price * l.q)}</b></li>`; }).join('')}</ul>
@@ -58,9 +59,8 @@ function renderSummary() {
       <div class="grand"><dt>Totali</dt><dd>${eur(total)}</dd></div>
     </dl>
     ${action}
-    <p class="sum-note">${icon('shield')} ${pay === 'paypal' ? 'Pagesa bëhet në faqen e sigurt të PayPal. Ne nuk e shohim llogarinë tënde.' : 'Paguan vetëm kur e merr pakon.'}</p>
+    <p class="sum-note">${icon('shield')} ${pay === 'paypal' ? 'Pagesa bëhet në faqen e sigurt të PayPal. Porosinë e nisim pasi të marrim pagesën.' : 'Paguan vetëm kur e merr pakon.'}</p>
     <ul class="co-trust"><li>${icon('shield')}Të dhënat përdoren vetëm për dërgesën</li><li>${icon('return')}Kthim falas brenda 14 ditëve</li><li>${icon('phone')}Ndihmë në shqip: ${CONTACT.phone}</li></ul>`;
-  if (pay === 'paypal') mountPaypal();
 }
 function applyCoupon() {
   const v = ($('#co-coupon')?.value || '').trim().toUpperCase();
@@ -85,7 +85,7 @@ function collectOrder() {
     items: cart.map(l => { const p = byId(l.id); return { id: l.id, name: p.name, q: l.q, size: l.size, price: p.price }; }),
     name: $('#co-name').value.trim(), phone: $('#co-phone').value.trim(), email: $('#co-email').value.trim(), country,
     city: $('#co-city').value.trim(), street: $('#co-address').value.trim(), note: $('#co-note').value.trim(),
-    shipMethod, pay, payLabel: pay === 'paypal' ? 'PayPal' : 'Pagesë në dorëzim', eta: eta(country)
+    shipMethod, pay, payLabel: pay === 'paypal' ? 'PayPal (kontrollo pagesën te PayPal para dërgesës)' : 'Pagesë në dorëzim', eta: eta(country)
   };
 }
 /* Porosia dërgohet te Netlify Forms; Netlify ta dërgon në email */
@@ -106,78 +106,44 @@ function finishOrder(o) {
   LAST = { ...o, first: o.name.split(/\s+/)[0], count: o.items.reduce((s, l) => s + l.q, 0) };
   cart = []; coupon = null; current = 'done'; saveCart(); go('porosia');
 }
+/* ---------- PayPal: lidhja e pagesës së dyqanit (paratë shkojnë direkt në llogarinë PayPal) ---------- */
+const PAYPAL_LINK = 'https://www.paypal.com/ncp/payment/JRH4NJ9LURJPY';
 let ordering = false;
 async function placeOrder() {
-  if (payMethod() === 'paypal') { toast(`${icon('cash')}<span>Për të paguar me PayPal, kliko butonin e verdhë PayPal.</span>`); $('#pp-btns')?.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
   const o = collectOrder(); if (!o || ordering) return;
+  /* Faqja e PayPal hapet menjëherë me klikimin, që shfletuesi të mos e bllokojë */
+  const tab = o.pay === 'paypal' ? window.open(PAYPAL_LINK, '_blank') : null;
+  if (tab) try { tab.opener = null; } catch {}
   ordering = true;
-  const btn = $('button[form="co-form"]'); if (btn) { btn.disabled = true; btn.textContent = 'Po dërgohet porosia…'; }
-  try { await sendOrder(o); finishOrder(o); }
+  const btn = $('button[form="co-form"]'), label = btn?.innerHTML;
+  if (btn) { btn.disabled = true; btn.textContent = 'Po dërgohet porosia…'; }
+  try { await sendOrder(o); o.paypalOpened = !!tab; finishOrder(o); }
   catch (e) { toast(`${icon('close')}<span>${esc(e.message)}</span>`); }
-  finally { ordering = false; if (btn?.isConnected) { btn.disabled = false; btn.textContent = 'Konfirmo porosinë'; } }
-}
-
-/* ---------- PayPal: paratë shkojnë direkt në llogarinë PayPal të dyqanit ---------- */
-const PAYPAL_CLIENT_ID = 'BAAqMo787obOl9KpEOJkM-bJ5TbfsJfzEVXWc4_5ziyeoB11tbZLRnKEImU-NhtGxzPWCSCqussvbT3AHY';
-let paypalLoad = null;
-function loadPaypal() {
-  if (window.paypal) return Promise.resolve();
-  return paypalLoad ||= new Promise((res, rej) => {
-    const s = document.createElement('script');
-    s.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=EUR&intent=capture&components=buttons&disable-funding=card,credit,paylater,sepa,bancontact,blik,eps,giropay,ideal,mybank,p24,sofort,venmo`;
-    s.onload = res;
-    s.onerror = () => { paypalLoad = null; s.remove(); rej(new Error('PayPal nuk u hap. Kontrollo internetin dhe provo përsëri, ose zgjidh pagesë në dorëzim.')); };
-    document.head.append(s);
-  });
-}
-async function mountPaypal() {
-  const box = $('#pp-btns'); if (!box) return;
-  try { await loadPaypal(); } catch (e) { box.innerHTML = `<p class="acc-note">${esc(e.message)}</p>`; return; }
-  if (!box.isConnected) return;
-  box.innerHTML = '';
-  const m = v => ({ currency_code: 'EUR', value: Number(v).toFixed(2) });
-  let cur = null;
-  window.paypal.Buttons({
-    fundingSource: window.paypal.FUNDING.PAYPAL,
-    style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay', height: 50 },
-    onClick: (data, actions) => (collectOrder() ? actions.resolve() : actions.reject()),
-    /* Shuma = çmimi i produkteve × sasia + dërgesa − kuponi */
-    createOrder: (data, actions) => {
-      cur = collectOrder();
-      return actions.order.create({
-        intent: 'CAPTURE',
-        purchase_units: [{
-          reference_id: cur.no, invoice_id: cur.no, description: `Porosia ${cur.no} në unblej`,
-          amount: { ...m(cur.total), breakdown: { item_total: m(cur.sub), shipping: m(cur.ship), discount: m(cur.disc) } },
-          items: cur.items.map(l => ({ name: `${l.name}${l.size ? ` (${l.size})` : ''}`.slice(0, 127), quantity: String(l.q), unit_amount: m(l.price), category: 'PHYSICAL_GOODS' }))
-        }],
-        application_context: { brand_name: 'unblej', shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW' }
-      });
-    },
-    onApprove: async (data, actions) => {
-      const d = await actions.order.capture();
-      const cap = d.purchase_units?.[0]?.payments?.captures?.[0];
-      cur.payLabel = 'PayPal · e paguar';
-      try { await sendOrder(cur, `ID e pagesës: ${cap?.id || d.id} · ${cap?.amount?.value || cur.total} ${cap?.amount?.currency_code || 'EUR'}`); } catch {}
-      finishOrder(cur);
-    },
-    onCancel: () => toast(`${icon('close')}<span>Pagesa me PayPal u anulua. Porosia nuk u krye.</span>`),
-    onError: err => toast(`${icon('close')}<span>${esc(err?.message || 'PayPal nuk funksionoi. Provo përsëri ose zgjidh pagesë në dorëzim.')}</span>`)
-  }).render(box).catch(() => {});
+  finally { ordering = false; if (btn?.isConnected) { btn.disabled = false; btn.innerHTML = label; } }
 }
 function doneView() {
   if (!LAST) return null;
-  const paid = LAST.pay === 'paypal';
+  const pp = LAST.pay === 'paypal';
+  const amount = LAST.total.toFixed(2);
   return `<div class="wrap"><div class="ok-wrap">
     <span class="ok-ic">${icon('check')}</span>
     <h1 class="page-h">Faleminderit, ${esc(LAST.first)}!</h1>
-    <p class="lead">${paid ? 'Pagesa me PayPal u krye dhe porosia u pranua.' : `Porosia jote u pranua. Do të të telefonojmë në <b>${esc(LAST.phone)}</b> për ta konfirmuar.`}</p>
+    ${pp ? `<p class="lead">Porosia u ruajt. Tani përfundo pagesën te PayPal.</p>
+    <div class="box pp-pay">
+      <ol>
+        <li>${LAST.paypalOpened ? 'Faqja e PayPal u hap në një skedë të re. Nëse nuk e sheh, kliko butonin më poshtë.' : 'Kliko butonin më poshtë për të hapur PayPal-in.'}</li>
+        <li>Shkruaj shumën: <b>${eur(LAST.total)}</b> <button class="copy" type="button" data-copy="${amount}">${icon('copy')} Kopjo</button></li>
+        <li>Te shënimi shkruaj numrin e porosisë: <b>${LAST.no}</b> <button class="copy" type="button" data-copy="${LAST.no}">${icon('copy')} Kopjo</button></li>
+      </ol>
+      <a class="btn btn-lg btn-block pp-go" href="${PAYPAL_LINK}" target="_blank" rel="noopener">Hap PayPal dhe paguaj ${eur(LAST.total)}</a>
+      <small>Porosinë e nisim sapo të marrim pagesën. Nëse ke pyetje, na telefono në ${CONTACT.phone}.</small>
+    </div>` : `<p class="lead">Porosia jote u pranua. Do të të telefonojmë në <b>${esc(LAST.phone)}</b> për ta konfirmuar.</p>`}
     <div class="box"><dl class="tot">
       <div><dt>Numri i porosisë</dt><dd>${LAST.no}</dd></div>
       <div><dt>Produkte</dt><dd>${LAST.count}</dd></div>
       <div><dt>Dërgesa në</dt><dd>${esc(LAST.city)}, ${COUNTRIES[LAST.country].name}</dd></div>
       <div><dt>Arrin rreth</dt><dd>${LAST.eta}</dd></div>
-      <div><dt>Pagesa</dt><dd>${LAST.payLabel}</dd></div>
+      <div><dt>Pagesa</dt><dd>${pp ? 'PayPal' : LAST.payLabel}</dd></div>
       <div class="grand"><dt>Totali</dt><dd>${eur(LAST.total)}</dd></div>
     </dl></div>
     <div class="hero-cta"><a class="btn btn-primary btn-lg" href="#dyqani">Vazhdo blerjen ${icon('arrow')}</a></div>
