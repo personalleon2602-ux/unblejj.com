@@ -127,6 +127,11 @@ function goToPaypal(o) {
     fields[`amount_${i + 1}`] = l.price.toFixed(2);
     fields[`quantity_${i + 1}`] = String(l.q);
   });
+  /* Kontakti i klientit shfaqet te detajet e pagesës në PayPal */
+  Object.assign(fields, {
+    on0_1: 'Klienti', os0_1: `${o.name}, tel. ${o.phone}`.slice(0, 200),
+    on1_1: 'Adresa', os1_1: `${o.street}, ${o.city}, ${COUNTRIES[o.country].name}`.slice(0, 200)
+  });
   const f = document.createElement('form');
   f.method = 'post'; f.action = 'https://www.paypal.com/cgi-bin/webscr';
   for (const [k, v] of Object.entries(fields)) { const i = document.createElement('input'); i.type = 'hidden'; i.name = k; i.value = v; f.append(i); }
@@ -140,7 +145,8 @@ async function placeOrder() {
   const btn = $('button[form="co-form"]'), label = btn?.innerHTML;
   if (btn) { btn.disabled = true; btn.textContent = o.pay === 'paypal' ? 'Po kalon te PayPal…' : 'Po dërgohet porosia…'; }
   try {
-    await sendOrder(o);
+    /* Te PayPal-i pagesa vazhdon edhe nëse formulari i Netlify s'punon: të dhënat e klientit shkojnë te pagesa */
+    try { await sendOrder(o); } catch (e) { if (o.pay !== 'paypal') throw e; console.warn('[porosi]', e.message); }
     if (o.pay === 'paypal') {
       /* Ruajmë porosinë dhe shportën, që t'i kemi kur klienti kthehet nga PayPal-i */
       try { sessionStorage.setItem('ub-last', JSON.stringify(o)); sessionStorage.setItem('ub-cart-backup', JSON.stringify(cart)); } catch {}
