@@ -8,7 +8,7 @@ Ky projekt përmban dyqanin unblej të plotë:
   - porositë, email-et e konfirmimit dhe pagesa me **PayPal**
 - **Paneli i administrimit** (`/admin`): porositë dhe statusi i tyre, produktet me foto, klientët dhe abonentët.
 
-Të dhënat (llogaritë, porositë, produktet dhe fotot e ngarkuara) ruhen në dosjen `data/`, në një bazë SQLite.
+Të dhënat (llogaritë, porositë, produktet dhe fotot e ngarkuara) ruhen në PostgreSQL (Neon). Në kompjuter, pa `DATABASE_URL`, përdoret një bazë lokale te dosja `data/`.
 
 ---
 
@@ -30,26 +30,36 @@ Hap http://localhost:3000. Për panelin hap http://localhost:3000/admin.
 
 ---
 
-## 2. Ta vendosësh online në Render
+## 2. Ta vendosësh online falas (Neon + Render, pa kartë)
 
-1. Krijo një llogari falas në [GitHub](https://github.com) dhe ngarko këtë dosje si repozitor të ri. Skedari `.gitignore` siguron që `.env`, `data/` dhe `node_modules/` të mos ngarkohen.
-2. Krijo llogari në [Render](https://render.com) dhe zgjidh **New → Blueprint**. Lidh repozitorin dhe Render e lexon vetë `render.yaml`.
-   - Plani **Starter** kushton rreth 7 $ në muaj, plus 1 GB disk rreth 0,25 $. Disku duhet që të mos humbasin porositë dhe llogaritë.
-3. Te **Environment** plotëso vlerat:
+### a) Baza e të dhënave te Neon
+1. Hyr te [neon.tech](https://neon.tech) me GitHub ose Google. Plani falas nuk kërkon kartë.
+2. Krijo një projekt, p.sh. `unblej`, dhe zgjidh rajonin **Europe (Frankfurt)**.
+3. Te **Connection string** kopjo lidhjen që fillon me `postgresql://...` dhe mbaron me `sslmode=require`. Kjo është `DATABASE_URL`.
 
-   | Emri | Çfarë vendos |
+### b) Serveri te Render
+1. Hyr te [render.com](https://render.com) me GitHub.
+2. Kliko **New + → Web Service** (jo Blueprint) dhe zgjidh repozitorin e dyqanit.
+3. Plotëso:
+   - **Language:** Node
+   - **Build Command:** `npm ci`
+   - **Start Command:** `npm start`
+   - **Instance Type:** **Free**
+4. Te **Environment Variables** shto:
+
+   | Emri | Vlera |
    |---|---|
-   | `SITE_URL` | adresa e dyqanit, p.sh. `https://unblej.com` |
-   | `ADMIN_EMAILS` | email-i yt (dhe të tjerëve që hyjnë në panel), të ndarë me presje |
-   | `SUPPORT_EMAIL` | email-i për klientët, p.sh. `info@unblej.com` |
-   | `RESEND_API_KEY` | çelësi nga Resend (hapi 3) |
-   | `MAIL_FROM` | p.sh. `unblej <no-reply@unblej.com>` |
-   | `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` | nga PayPal (hapi 4) |
-   | `PAYPAL_ENV` | `sandbox` për prova, `live` për pagesa të vërteta |
+   | `NODE_VERSION` | `24` |
+   | `NODE_ENV` | `production` |
+   | `DATABASE_URL` | lidhja nga Neon |
+   | `ADMIN_EMAILS` | email-i yt |
+   | `PAYPAL_ENV` | `live` |
+   | `PAYPAL_CLIENT_ID` | Client ID e PayPal (është edhe te `render.yaml`) |
 
-4. **Domeni:** blej domenin (p.sh. unblej.com) dhe te Render → **Settings → Custom Domains** shto domenin. Ndiq udhëzimet për DNS.
+5. Kliko **Create Web Service**. Pas 2–4 minutash merr adresën, p.sh. `https://unblej.onrender.com`. Shtoje edhe si `SITE_URL`.
+6. Herën e parë serveri krijon vetë tabelat dhe produktet. Regjistrohu me email-in e `ADMIN_EMAILS` dhe hap `/admin`.
 
----
+**Kufizimet e planit falas:** serveri "fle" pas 15 minutash pa vizita, dhe vizitori i parë pas kësaj pret rreth 30–50 sekonda. Të dhënat dhe fotot nuk humbasin, sepse janë te Neon. Kur të rritet dyqani, kalon te një plan me pagesë pa ndryshuar asgjë në kod.
 
 ## 3. Email-et me Resend
 
@@ -91,7 +101,7 @@ Si funksionon:
 
 ```
 server.js            API-ja dhe faqja
-lib/db.js            baza e të dhënave (SQLite)
+lib/db.js            baza e të dhënave (PostgreSQL / PGlite lokal)
 lib/auth.js          fjalëkalimet, seancat, kufizimi i përpjekjeve
 lib/shop.js          çmimet, dërgesa, kuponët, llogaritja e porosisë
 lib/mail.js          email-et (Resend) dhe pamja e tyre

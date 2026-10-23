@@ -1,9 +1,10 @@
-# Konfigurimi për Render (render.com). Render e lexon vetë kur lidh repozitorin.
+# Konfigurimi për Render (render.com), plani FALAS, pa kartë.
+# Të dhënat ruhen te Neon (Postgres falas): vendos DATABASE_URL te Environment.
 services:
   - type: web
     name: unblej
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: npm ci
     startCommand: npm start
     healthCheckPath: /healthz
@@ -12,16 +13,16 @@ services:
         value: "24"
       - key: NODE_ENV
         value: production
-      - key: DATA_DIR
-        value: /var/data
       - key: PAYPAL_ENV
         value: live
       # Client ID e PayPal është publike (shfaqet edhe në faqe). Secret, nëse e shton, vendoset vetëm te Render.
       - key: PAYPAL_CLIENT_ID
         value: BAAqMo787obOl9KpEOJkM-bJ5TbfsJfzEVXWc4_5ziyeoB11tbZLRnKEImU-NhtGxzPWCSCqussvbT3AHY
-      - key: SITE_URL
+      - key: DATABASE_URL
         sync: false
       - key: ADMIN_EMAILS
+        sync: false
+      - key: SITE_URL
         sync: false
       - key: SUPPORT_EMAIL
         sync: false
@@ -31,7 +32,3 @@ services:
         sync: false
       - key: PAYPAL_CLIENT_SECRET
         sync: false
-    disk:
-      name: unblej-data
-      mountPath: /var/data
-      sizeGB: 1
