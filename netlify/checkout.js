@@ -97,8 +97,12 @@ async function sendOrder(o, paypalInfo = '') {
     dergesa: `${o.shipMethod === 'exp' ? 'Ekspres' : 'Standarde'}: ${o.ship ? eur(o.ship) : 'Falas'}`,
     kuponi: o.coupon ? `${o.coupon} (−${eur(o.disc)})` : '', totali: eur(o.total), pagesa: o.payLabel, paypal: paypalInfo
   });
-  const r = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
-  if (!r.ok) throw new Error('Porosia nuk u dërgua. Kontrollo internetin dhe provo përsëri.');
+  if (location.protocol === 'file:') throw new Error('Porosia dërgohet vetëm kur faqja hapet nga adresa e Netlify (…netlify.app), jo nga skedari në kompjuter.');
+  let r;
+  try { r = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() }); }
+  catch { throw new Error(`Porosia nuk u dërgua. Kontrollo internetin dhe provo përsëri, ose na telefono në ${CONTACT.phone}.`); }
+  if (r.status === 404) throw new Error(`Porosia nuk u dërgua: formulari i porosive nuk është aktiv ende. Na telefono në ${CONTACT.phone}.`);
+  if (!r.ok) throw new Error(`Porosia nuk u dërgua. Provo përsëri pas pak, ose na telefono në ${CONTACT.phone}.`);
 }
 function finishOrder(o) {
   const u = me();
