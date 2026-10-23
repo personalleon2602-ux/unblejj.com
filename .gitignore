@@ -5,3 +5,4 @@ data/
 # Prototipi i vjetër (faqja pa server)
 _prototipi/
 .claude/
+*.zip
